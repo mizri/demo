@@ -1,0 +1,87 @@
+@import '../../variable.less';
+
+.@{class-prefix-emr-editor} {
+  &-element_table{
+    border-spacing: 0;
+    border-collapse: separate;
+    width: 100%;
+    border: 1px solid#333;
+
+
+    > tbody {
+      > tr {
+        td {
+          border: 1px solid #333;
+
+          &.selected {
+            background-color: hsl(@primary-color, 0.1);
+          }
+        }
+      }
+    }
+  }
+
+  &-element_table_div {
+    min-height: 36px;
+    user-select: none;
+    word-break: break-all;
+    padding: 2px;
+    height: inherit;
+  }
+
+  &-element_table_break {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    height: 1px;
+    pointer-events: none;
+  }
+
+  &-element_table_wrap {
+    position: relative;
+    display: block;
+
+    &.col-resize {
+      cursor: col-resize;
+    }
+
+    &.row-resize {
+      cursor: row-resize;
+    }
+
+    .x-line  {
+      border: 1px solid @primary-color;
+      height: 0;
+      position: absolute;
+      left: 0;
+      right: 0;
+    }
+
+    .y-line  {
+      border: 1px solid @primary-color;
+      width: 0;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+    }
+
+    .row-delete {
+      position: absolute;
+      background-color: hsl(red, 0.1) !important;
+      left: 0;
+      right: 0;
+    }
+
+    .col-delete {
+      position: absolute;
+      background-color: hsl(red, 0.1) !important;
+      top: 0;
+      bottom: 0;
+    }
+  }
+}
+
+emr-table-content {
+  outline: none
+}

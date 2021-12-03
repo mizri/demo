@@ -1,0 +1,35 @@
+@import '../variable.less';
+
+.@{class-prefix-emr-editor} {
+
+  &-context-menu-wrapper {
+    position: fixed;
+    background-color: #fff;
+    border-radius: 4px;
+    border: 1px solid @border-color;
+    overflow: hidden;
+    box-shadow: 3px 3px 4px 0px @border-color;
+  }
+
+  &-context-menu {
+    .ant-menu-vertical .ant-menu-item {
+      margin-bottom: 0 !important;
+
+      &:hover {
+        background-color: #efefef;
+      }
+
+      button {
+        border: none;
+        background-color: transparent;
+        display: block;
+      }
+    }
+
+    .line {
+      border-top: 1px solid @border-color;
+      height: 0;
+
+    }
+  }
+}

@@ -1,0 +1,35 @@
+@import '../../variable.less';
+
+.@{class-prefix-emr-editor} {
+  
+  &-table {
+    position: relative;
+
+    > table {
+      border-spacing: 0;
+      border-collapse: collapse;
+
+      tr {
+        > td {
+          border: 1px solid @border-color;
+  
+          .grid {
+            display: block;
+            width: 20px;
+            height: 20px;
+            border: none;
+            background: transparent;
+
+            &.selected {
+              background-color: hsl(@primary-color, 0.1);
+            }
+          }
+        }
+      }
+    }
+
+    > div {
+      color: #333;
+    }
+  }
+}

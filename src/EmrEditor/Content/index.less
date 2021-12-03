@@ -1,0 +1,48 @@
+@import '../variable.less';
+
+@left-padding: 12px;
+@top-padding: 12px;
+
+.@{class-prefix-emr-editor} {
+  &-content {
+    margin: auto;
+    flex: auto;
+    overflow: auto;
+    padding: 12px;
+  }
+
+  &-section {
+    position: relative;
+    outline: none;
+    // height: 297mm;
+    // width: 210mm;
+    height: 1123px;
+    width: 794px;
+    border: 1px solid @border-color;
+    box-shadow: 0px 0px 8px 1px @border-color;
+  }
+  
+  &-text {
+    outline: inherit;
+    width: inherit;
+    height: inherit;
+    padding: @top-padding @left-padding;
+  }
+
+  // &-empty {
+  //   // text-ali
+  // }
+
+  &-placeholder {
+    display: none;
+    position: absolute;
+    z-index: 0;
+    left: @left-padding;
+    top: @top-padding;
+    color: #999;
+
+    &.visible {
+      display: block;
+    }
+  }
+}
