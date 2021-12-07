@@ -4,6 +4,13 @@ interface Options {
   editorDOM: HTMLDivElement
 }
 
+export type RangeValueOf = {
+  start: [Node, number],
+  end: [Node, number],
+  collapsed: boolean,
+  root: Node,
+}
+
 export class Selection {
   // 当前的范围选区
   currentRange: Range | null | undefined = null
@@ -28,7 +35,7 @@ export class Selection {
    * 监听选区改变
    */
   onSelectionChange = () => {
-    return this.saveRange();
+    // return this.saveRange();
   }
 
   saveRange(range?: Range) {
@@ -62,7 +69,24 @@ export class Selection {
    */
   getRange() {
     const selection = window.getSelection();
-    return selection?.getRangeAt(0);
+    if (selection && selection.rangeCount) {
+      return selection.getRangeAt(0);
+    }
+    return null;
+  }
+
+  /**
+   * 设置范围
+   * @param options 
+   */
+  setRange(options: RangeValueOf) {
+    if (this.currentRange) {
+      this.currentRange.setStart(...options.start);
+      this.currentRange.setEnd(...options.end);
+      // if (options.collapsed) {
+      //   this.currentRange.collapse(options.collapsed);
+      // }
+    }
   }
 
   /**
@@ -77,17 +101,17 @@ export class Selection {
    * 构造函数
    * @param $element dom元素
    * @param isContent 是否选中元素还是元素子元素 true:是 false:否
-   * @param collapse 是否折叠选区 true:是 false:否
+   * @param collapsed 是否折叠选区 true:是 false:否
    * @return DOMQeury
    */
-  createRangeByElement(element: Selector, isContent?: boolean, collapse?: boolean): void {
+  createRangeByElement(element: Selector, isContent?: boolean, collapsed?: boolean): void {
     // 创建一个范围
     const range = document.createRange();
     // 判断选中
     isContent ? range.selectNodeContents(element as Node) : range.selectNode(element as Node);
     // 如果需要折叠
-    if (collapse) {
-      range.collapse(collapse);
+    if (collapsed) {
+      range.collapse(collapsed);
     }
     // 保存当前选区；
     this.saveRange(range);
@@ -146,6 +170,23 @@ export class Selection {
         selection.addRange(this.currentRange);
       }
     }
+  }
+
+  /**
+   * 将当前range转为普通对象
+   * @returns 
+   */
+  rangeValueof(): RangeValueOf | null {
+    const range = this.getRange();
+    if (range) {
+      return {
+        start: [range.startContainer, range.startOffset],
+        end: [range.endContainer, range.endOffset],
+        root: range.commonAncestorContainer,
+        collapsed: range.collapsed,
+      }
+    }
+    return null;
   }
 }
 

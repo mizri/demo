@@ -24,8 +24,12 @@ export class MutationDOM {
 
   // 观察实例对象
   observer: MutationObserver
+  // 观察节点
+  targetNode: Node | Element | null = null
   // 回调队列
   queues: mutationCallback[] = []
+  // 观察方法
+  connect: any = () => {}
 
   /**
    * 订阅一个回调队列
@@ -53,10 +57,16 @@ export class MutationDOM {
    * @param options 配置
    */
   observe(targetNode: Node, options: MutationObserverInit = {}) {
-    this.observer.observe(targetNode, { ...this.defaultOptions, ...options });
+    this.connect = function() {
+      this.observer.observe(targetNode, { ...this.defaultOptions, ...options });
+    }
+    this.connect();
   }
 
-  // 停止观察
+
+  /**
+   * 停止观察
+   */
   disconnect() {
     this.observer.disconnect();
   }

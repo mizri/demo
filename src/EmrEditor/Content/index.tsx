@@ -34,8 +34,10 @@ export default class Content extends React.Component<ContentProps, ContentState>
 
   // 历史记录
   history: History
-  // 当前正在进行的操作
-  operator: EventType | null = null
+  // 是否中文输入状态
+  isComposing: boolean = false
+  // 缓存中文输入时的文本
+  cacheMutations: MutationRecord[] = []
   // 编辑器dom实例
   contentDOMRef: ReactRef<HTMLDivElement | null>
   contentDOM: HTMLDivElement | null = null
@@ -56,6 +58,8 @@ export default class Content extends React.Component<ContentProps, ContentState>
   componentDidMount() {
     this.contentDOM = this.contentDOMRef.current;
     this.$contentDOM = $(this.contentDOM);
+    // 初始化
+    this.initialize();
     // 初始化选区绑定
     Selection.bindEvent({ editorDOM: this.contentDOM as HTMLDivElement });
     // 订阅删除事件
@@ -66,11 +70,15 @@ export default class Content extends React.Component<ContentProps, ContentState>
     EventHandler.on(EventType.Redo, this.onRedoContent);
     // 订阅撤销
     EventHandler.on(EventType.Undo, this.onUndoContent);
+    // 订阅开始中文输入
+    EventHandler.on(EventType.CompositionStart, this.onCompositionStart);
+    // 订阅结束中文输入
+    EventHandler.on(EventType.CompositionEnd, this.onCompositionEnd);
     // 订阅创建表格事件
     EventHandler.subscribe(CustomEventType.CreateTable, this.onCreateTable);
-    // 初始化DOM观察
+    // 初始化编辑器DOM变化观察
     MutationDOM.observe(this.contentDOM as Node);
-    // 绑定删除事件
+    // 绑定操作栈保存
     MutationDOM.subscribe(this.onSaveContent);
   }
 
@@ -113,6 +121,8 @@ export default class Content extends React.Component<ContentProps, ContentState>
     Selection.createRangeByElement($last.get(0), true, true);
     // 将范围添加到页面
     Selection.restoreSelection();
+    // 保存选区
+    this.history.saveRangeCache();
   }
 
   /**
@@ -159,7 +169,9 @@ export default class Content extends React.Component<ContentProps, ContentState>
   /**
    * 内容输入改变时
    */
-  onChange = () => {
+  onChange = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    // 设置是否是中文输入状态
+    // 是否显示placeholder
     if (this.contentDOM!.textContent && this.state.visible === true) {
       this.setState({ visible: false });
     }
@@ -185,51 +197,62 @@ export default class Content extends React.Component<ContentProps, ContentState>
   }, 150)
 
   /**
+   * 开始中文输入
+   */
+  onCompositionStart = () => {
+    this.isComposing = true;
+  }
+  
+  /**
+   * 结束中文输入
+   */
+  onCompositionEnd = () => {
+    this.isComposing = false;
+  }
+
+  /**
    * 保存内容
    */
+  // mutations: MutationRecord[], observer: MutationObserver
   onSaveContent = (mutations: MutationRecord[], observer: MutationObserver) => {
-    if (this.operator === null) {
-      this.history.save(this.contentDOM!.innerHTML);
-    }
+    // 将dom变化数组保存到缓存中
+    this.cacheMutations.push(...mutations);
+    // 如果当前编辑器不是处于中文输入状态就保存
+    setTimeout(() => {
+      // 非中文输入下才保存到操作栈链表中
+      if (!this.isComposing) {
+        // 保存dom操作
+        this.history.saveNodeCache(this.cacheMutations);
+        // 保存选区
+        this.history.saveRangeCache();
+        // 重置缓存
+        this.cacheMutations = [];
+      }
+    }, 16);
   }
 
   /**
    * 恢复内容
    */
   onRedoContent = () => {
-    this.resetOperator(EventType.Redo);
-    const data = this.history.restore();
-    if (data) {
-      this.contentDOM!.innerHTML = data!.value;
-    }
-    this.resetOperator(null, 1);
+    // 断开观察连接
+    MutationDOM.disconnect();
+    // 执行恢复
+    this.history.redo();
+    // 重新连接
+    MutationDOM.connect();
   }
 
   /**
    * 撤销内容
    */
   onUndoContent = () => {
-    this.resetOperator(EventType.Undo);
-    const data = this.history.revoke();
-    if (data) {
-      this.contentDOM!.innerHTML = data!.value;
-    }
-    this.resetOperator(null, 1);
-  }
-
-  /**
-   * 重置当前操作状态
-   * @param value 值
-   * @param immediate 立刻执行间隔
-   */
-  resetOperator(value: EventType | null, immediate: number = 0) {
-    if (immediate) {
-      setTimeout(() => {
-        this.operator = value;
-      }, immediate)
-    } else {
-      this.operator = value;
-    }
+    // 断开观察连接
+    MutationDOM.disconnect();
+    // 执行撤销
+    this.history.undo();
+    // 重新连接
+    MutationDOM.connect();
   }
 
   /**
@@ -265,6 +288,8 @@ export default class Content extends React.Component<ContentProps, ContentState>
             onClick={EventHandler.onClick}
             onKeyDown={EventHandler.onKeyDown}
             onKeyUp={EventHandler.onKeyUp}
+            onCompositionStart={EventHandler.onCompositionStart}
+            onCompositionEnd={EventHandler.onCompositionEnd}
             ref={this.contentDOMRef}
             contentEditable
           />

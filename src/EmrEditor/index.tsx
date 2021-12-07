@@ -36,13 +36,13 @@ export default class EmrEditor extends React.Component<EmrEditorProps, EmrEditor
     this.contentRef = React.createRef();
     // 初始化全局事件委托
     this.unDelegationBind = EventHandler.initEventDelegationBind();
-    // 定义全屏窗口
+    // 订阅全屏窗口
     EventHandler.subscribe(CustomEventType.FullScreen, this.onToggleFullScreen);
   }
 
   componentDidMount() {
     // 初始化编辑器
-    this.contentRef.current.initialize();
+    // this.contentRef.current.initialize();
   }
 
   componentWillUnmount() {

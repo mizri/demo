@@ -9,12 +9,14 @@ interface EventHooks<T> extends Array<any> {
 
 // -------------------------------编辑器相关操作事件------------------
 export enum EventType {
-  Undo /*          */ = 'undo', // 撤销
-  Redo /*          */ = 'redo', // 恢复
-  Enter /*         */ = 'enter', // 回车
-  Click /*         */ = 'click', // 点击
-  Delete /*        */ = 'delete',// 删除
-  Change /*        */ = 'change', // 文本改变
+  Undo /*              */ = 'undo', // 撤销
+  Redo /*              */ = 'redo', // 恢复
+  Enter /*             */ = 'enter', // 回车
+  Click /*             */ = 'click', // 点击
+  Delete /*            */ = 'delete',// 删除
+  Change /*            */ = 'change', // 文本改变
+  CompositionStart/*   */ = 'compositionStart', // 开始中文输入
+  CompositionEnd/*     */ = 'compositionEnd', // 结束中文输入
   // GlobalClick /*   */ = 'globalClick', // 全局点击
 };
 
@@ -30,7 +32,7 @@ export const EVENT_KEY_CODE_Z /*           */ = 90; // 字母 z
 export enum CustomEventType {
   FullScreen /*           */ = 'fullScreen', // 全屏
   TooggleContentEdit/*    */ = 'disableContentEditable', // 切换编辑器是否可编辑
-  CreateTable /*           */= 'createTable', // 创建表格
+  CreateTable /*          */ = 'createTable', // 创建表格
 }
 // ----------------------------------------------------------------
 
@@ -61,7 +63,9 @@ export class EventHandler {
   eventHooksEnter: /*               */ EventHooks<Callback> = [] // 回车回调事件集合
   eventHooksClick: /*               */ EventHooks<Callback> = [] // 点击回调事件集合
   eventHooksDelete: /*              */ EventHooks<Callback> = [] // 删除回调事件集合
-  eventHooksKeyChange: /*           */ EventHooks<Callback> = [] // 普通键盘时间
+  eventHooksKeyChange: /*           */ EventHooks<Callback> = [] // 普通键盘输入回调事件集合
+  eventHooksCompositionStart: /*    */ EventHooks<Callback> = [] // 开始中文输入回调事件集合
+  eventHooksCompositionEnd: /*      */ EventHooks<Callback> = [] // 开始中文输入回调事件集合
 
   // 全文档事件委托回调
   eventHooksDelegationClick: /*       */ EventHooks<Callback> = [] // 委托点击
@@ -264,6 +268,8 @@ export class EventHandler {
       this.eventHooksUndo = [];
       this.eventHooksRedo = [];
       this.eventHooksKeyChange = [];
+      this.eventHooksCompositionStart = [];
+      this.eventHooksCompositionEnd = [];
     }
 
   }
@@ -289,6 +295,14 @@ export class EventHandler {
       }
       case EventType.Redo: {
         queue = this.eventHooksRedo;
+        break;
+      }
+      case EventType.CompositionStart: {
+        queue = this.eventHooksCompositionStart;
+        break;
+      }
+      case EventType.CompositionEnd: {
+        queue = this.eventHooksCompositionEnd;
         break;
       }
       default: {
@@ -319,6 +333,23 @@ export class EventHandler {
     });
   }
 
+  /**
+   * 中文输入开始
+   */
+  onCompositionStart = () => {
+    this.eventHooksCompositionStart.forEach((func) => {
+      func.call(null);
+    });
+  }
+
+  /**
+   * 中文输入结束
+   */
+   onCompositionEnd = () => {
+    this.eventHooksCompositionEnd.forEach((func) => {
+      func.call(null);
+    });
+  }
 
   /**
    * 键盘按下
