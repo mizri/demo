@@ -30,6 +30,8 @@ export class MutationDOM {
   queues: mutationCallback[] = []
   // 观察方法
   connect: any = () => {}
+  // 是否开始观察
+  isConnected: boolean = false
 
   /**
    * 订阅一个回调队列
@@ -57,8 +59,11 @@ export class MutationDOM {
    * @param options 配置
    */
   observe(targetNode: Node, options: MutationObserverInit = {}) {
-    this.connect = function() {
+    this.connect = () => {
+      // 开始观察
       this.observer.observe(targetNode, { ...this.defaultOptions, ...options });
+      // 是否开始观察
+      this.isConnected = true;
     }
     this.connect();
   }
@@ -68,7 +73,11 @@ export class MutationDOM {
    * 停止观察
    */
   disconnect() {
-    this.observer.disconnect();
+    if (this.isConnected) {
+      this.observer.disconnect();
+      // 停止观察
+      this.isConnected = false;
+    }
   }
 }
 

@@ -16,7 +16,7 @@ export default function Demo() {
         innerHTML="<p>这是第一个编辑器</p><p>第二行</p>"
       /> */}
       <EmrEditor
-        innerHTML="<p><span>这是第一个编辑器</span></p><p id='test'>第二行</p><p><br></p>"
+        // innerHTML="<p><span>这是第一个编辑器</span></p><p id='test'>第二行</p><p><br></p>"
         // innerHTML="都不<p>这是第一个编辑器</p><p>第二行</p><p><br></p>"
         // innerHTML=""
       />

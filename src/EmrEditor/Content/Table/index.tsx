@@ -1,11 +1,12 @@
 import TableHandler from './TableHandler';
 import TableOperate from './TableOperate';
 import Selection from '../../Selection';
+import ContentEditor from '..';
 import './index.less';
 
 export default class Table {
-  static initialize() {
-    TableHandler.initialize();
+  static initialize(contentEditorRef: ContentEditor) {
+    TableHandler.initialize(contentEditorRef);
   }
 
   /**

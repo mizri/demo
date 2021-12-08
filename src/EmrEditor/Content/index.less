@@ -20,13 +20,37 @@
     width: 794px;
     border: 1px solid @border-color;
     box-shadow: 0px 0px 8px 1px @border-color;
+
+    &.row-resize {
+      cursor: row-resize;
+    }
+
+    &.col-resize {
+      cursor: col-resize;
+    }
+
+    .x-line  {
+      border-top: 2px solid @primary-color;
+      height: 0;
+      position: absolute;
+      left: 0;
+      right: 0;
+    }
+
+    .y-line  {
+      border-left: 2px solid @primary-color;
+      width: 0;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+    }
   }
   
   &-text {
     outline: inherit;
     width: inherit;
     height: inherit;
-    padding: @top-padding @left-padding;
+    // padding: @top-padding @left-padding;
   }
 
   // &-empty {
