@@ -30,3 +30,51 @@
     margin: 0;
   }
 }
+
+
+.test.ant-dropdown {
+  // transition: none !important;
+  // transition-delay: initial !important;
+  // transition-property: none !important;
+  // transition-timing-function: initial !important;
+  // animation: antSlideUpInOver !important;
+  // animation-delay: initial !important;
+  // animation-duration: 0s !important;
+  // animation-timing-function: initial !important;
+  // z-index: 99999;
+
+  // &.ant-slide-up-enter  {
+  //   // opacity: 1 !important;
+  //   animation: antSlideUpInOver !important;
+  // }
+
+  // &.ant-slide-up-appear {
+  //   // opacity: 1 !important;
+  // }
+
+  
+
+  // &::before {
+  //   display: none;
+  // }
+
+}
+
+.ant-slide-up-enter.ant-slide-up-enter-active,
+.ant-slide-up-appear.ant-slide-up-appear-active {
+  animation: antSlideUpInOver !important;
+}
+
+
+@keyframes antSlideUpInOver {
+  0% {
+    transform: scaleY(2);
+    transform-origin: 0% 0%;
+    opacity: 1;
+  }
+  100% {
+    transform: scaleY(2);
+    transform-origin: 0% 0%;
+    opacity: 1;
+  }
+}
